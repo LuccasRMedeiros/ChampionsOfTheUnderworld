@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BeaterBehaviour : MonoBehaviour
 {
+    public GameObject BeatDaemon;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,5 +16,10 @@ public class BeaterBehaviour : MonoBehaviour
     void Update()
     {
         
+    }
+
+    void OnCollsionEnter2D(Collision2D other)
+    {
+        BeatDaemon = other;
     }
 }
