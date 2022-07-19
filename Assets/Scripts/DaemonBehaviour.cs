@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class DaemonBehaviour : MonoBehaviour
 {
-    private float Speed = 0.1f;
-    public char BeatKey = 'a';
+    private float _speed = 0.1f;
+    public string beatKey;
     
     // Start is called before the first frame update
     void Start()
@@ -22,7 +22,7 @@ public class DaemonBehaviour : MonoBehaviour
 
     void FixedUpdate()
     {
-        transform.Translate(Vector3.left * Speed);
+        transform.Translate(Vector3.left * _speed);
     }
 
     void OnBecameInvisible()

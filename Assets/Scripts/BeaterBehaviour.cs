@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BeaterBehaviour : MonoBehaviour
 {
-    public GameObject BeatDaemon = null;
+    private DaemonBehaviour _daemonBehaviour = null;
 
     // Start is called before the first frame update
     void Start()
@@ -12,25 +12,19 @@ public class BeaterBehaviour : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if (Input.GetKeyDown("a"))
-        {
-            print("'A' key was pressed");
-            Destroy(BeatDaemon);
-        }
+        _daemonBehaviour = other.GetComponent<DaemonBehaviour>();
     }
 
-    void OnCollsionEnter2D(Collision2D other)
+    void OnTriggerStay2D(Collider2D other)
     {
-        print("Collision Detected");
-        BeatDaemon = other.gameObject;
+        if (Input.GetKeyDown(_daemonBehaviour.beatKey))
+            Destroy(other.gameObject);
     }
 
-    void OnCollisionExit2D(Collision2D other)
+    void OnTriggerExit2D(Collider2D other)
     {
-        print("End of collision");
-        BeatDaemon = null;
+        _daemonBehaviour = null;
     }
 }
