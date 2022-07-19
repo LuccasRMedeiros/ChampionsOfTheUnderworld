@@ -6,27 +6,17 @@ using UnityEngine;
 public class DaemonBehaviour : MonoBehaviour
 {
     private float _speed = 0.1f;
-    public string beatKey;
     
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public string beatKey;
+    public SpawnerBehaviour spawnerProps;
 
     void FixedUpdate()
     {
         transform.Translate(Vector3.left * _speed);
     }
 
-    void OnBecameInvisible()
+    void OnDisable()
     {
-        Destroy(this);
+        spawnerProps.manyDaemons--;
     }
 }

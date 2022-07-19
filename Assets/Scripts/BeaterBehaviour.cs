@@ -6,12 +6,6 @@ public class BeaterBehaviour : MonoBehaviour
 {
     private DaemonBehaviour _daemonBehaviour = null;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     void OnTriggerEnter2D(Collider2D other)
     {
         _daemonBehaviour = other.GetComponent<DaemonBehaviour>();

@@ -4,46 +4,46 @@ using UnityEngine;
 
 public class SpawnerBehaviour : MonoBehaviour
 {
+    private bool _canSummonDaemon = false;
     private float _timer = 0.0f;
-    private float _waitTill = 0.2f;
-    private static string _nextBeatKey = "a";
-        
-    private DaemonBehaviour _daemonBehaviour = null;
+    private string[] _beatKey = { "a", "s", "d" };
+    private DaemonBehaviour _daemonProps = null;
+    
     public GameObject Daemon;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public int manyDaemons = 0;
 
     // Update is called once per frame
     void Update()
     {
-        _timer += Time.deltaTime;
+        int nextBeatKey = -1;
 
-        if (_timer > _waitTill)
+        // When there aren't any daemons anymore, tells to summoner that it can summon new ones
+        if (!_canSummonDaemon && manyDaemons == 0)
+            _canSummonDaemon = true;
+
+        if (_canSummonDaemon)
         {
-            var newBornDaemon = Instantiate(Daemon, transform.position, Quaternion.identity);
-        
-            _daemonBehaviour = newBornDaemon.GetComponent<DaemonBehaviour>();
-            _daemonBehaviour.beatKey = _nextBeatKey;
-            _timer = 0;
+            _timer += Time.deltaTime;
 
-            if (_nextBeatKey == "a")
+            if (_timer > 0.5f) // Wait half second to spaw a new daemon
             {
-                _nextBeatKey = "s";
-                _waitTill = 1.5f;
-            }
-            else if (_nextBeatKey == "s")
-                _nextBeatKey = "d";
-            else if (_nextBeatKey == "d")
-            {
-                _nextBeatKey = "a";
-                _waitTill = 3.0f;
-            }
+                _timer = 0.0f;
 
-            Debug.Log(_daemonBehaviour.beatKey);
+                var newBornDaemon = Instantiate(Daemon, transform.position, Quaternion.identity);
+                nextBeatKey = Random.Range(0, 3);
+
+                _daemonProps = newBornDaemon.GetComponent<DaemonBehaviour>();
+                _daemonProps.beatKey = _beatKey[nextBeatKey];
+                _daemonProps.spawnerProps = this;
+
+                manyDaemons++;
+
+                Debug.Log(_daemonProps.beatKey);
+            }
         }
+
+        // When three daemons were spawned, tell the summoner it can't summon
+        if (manyDaemons == 3)
+            _canSummonDaemon = false;
     }
 }
