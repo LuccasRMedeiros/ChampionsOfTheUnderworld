@@ -15,11 +15,11 @@ public class SpawnerBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        int nextBeatKey = -1;
+        int nextBeatKey = 0;
 
         // When there aren't any daemons anymore, tells to summoner that it can summon new ones
         if (!_canSummonDaemon && manyDaemons == 0)
-            _canSummonDaemon = true;
+            _canSummonDaemon = false;
 
         if (_canSummonDaemon)
         {
