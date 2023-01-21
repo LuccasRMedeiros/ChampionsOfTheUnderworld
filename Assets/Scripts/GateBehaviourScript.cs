@@ -14,106 +14,156 @@ enum moveDir
     down,
 }
 
+enum selectorDir
+{
+    none = 0,
+    horizontal,
+    vertical,
+}
+
 public class GateBehaviourScript : MonoBehaviour
 {
-    public GameObject RedGateLock, GreenGateLock, BlueGateLock;
+    public GameObject RedGateLock, GreenGateLock, BlueGateLock, HorizontalSelector, VerticalSelector;
 
-    private GameObject[] _GateLocks = new GameObject[9];
-    private GameObject[] _NewGateLocks;
+    private GameObject[,] _GateLocks = new GameObject[3, 3];
+    private GameObject _NewLock;
+    private GameObject _Selector;
     private moveDir _moveDir = moveDir.none;
+    private selectorDir _selectorDir = selectorDir.horizontal;
     private float _speed = 0.2f;
+    private float _traveled = 0;
     private int _steps = 0;
 
     // Start is called before the first frame update
     void Start()
     {
-        Vector3[] gateLockPos = new Vector3[9];
+        Vector3 selectorPos = transform.position;
 
+        selectorPos.x += 0.8f;
+        selectorPos.y += 0.8f;
+        selectorPos.z += 1;
+        _Selector = Instantiate(HorizontalSelector, selectorPos, Quaternion.identity);
+        
         for (int i = 0; i < 3; ++i)
         {
-            gateLockPos[i] = transform.position;
-            gateLockPos[i].x += 0.8f * i;
-            gateLockPos[i].y += 0.8f;
+            Vector3 gateLockPos = transform.position;
 
-            gateLockPos[i + 3] = transform.position;
-            gateLockPos[i + 3].x += 0.8f * i;
-            
-            gateLockPos[i + 6] = transform.position;
-            gateLockPos[i + 6].x += 0.8f * i;
-            gateLockPos[i + 6].y -= 0.8f;
+            gateLockPos.x += 0.8f * i;
+            gateLockPos.y += 0.8f;
+            _GateLocks[i, 0] = Instantiate(RedGateLock, gateLockPos, Quaternion.identity);
 
-            _GateLocks[i] = Instantiate(RedGateLock, gateLockPos[i], Quaternion.identity);
-            _GateLocks[i + 3] = Instantiate(GreenGateLock, gateLockPos[i + 3], Quaternion.identity);
-            _GateLocks[i + 6] = Instantiate(BlueGateLock, gateLockPos[i + 6], Quaternion.identity);
+            gateLockPos.y -= 0.8f;
+            _GateLocks[i, 1] = Instantiate(GreenGateLock, gateLockPos, Quaternion.identity);
+
+            gateLockPos.y -= 0.8f;
+            _GateLocks[i, 2] = Instantiate(BlueGateLock, gateLockPos, Quaternion.identity);
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3[] newGateLocksPos = new Vector3[3];
-
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (_selectorDir == selectorDir.horizontal)
         {
-            for (int n = 0; n < 3; ++n)
+            if (Input.GetKeyDown(KeyCode.DownArrow))
             {
-                newGateLocksPos[n] = _GateLocks[n * 3].transform.position;
-                newGateLocksPos[n].x -= 0.8f;
+                if (_steps == 2)
+                {
+                    _Selector.transform.Translate(Vector3.up * 1.6f);
+                    _steps = 0;
+                }
+                else
+                {
+                    _Selector.transform.Translate(Vector3.down * 0.8f);
+                    ++_steps;
+                }
             }
+            else if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                if (_steps == 0)
+                {
+                    _Selector.transform.Translate(Vector3.down * 1.6f);
+                    _steps = 2;
+                }
+                else
+                {
+                    _Selector.transform.Translate(Vector3.up * 0.8f);
+                    --_steps;
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                Vector3 newLockPos = _GateLocks[0, _steps].transform.position;
+                
+                newLockPos.x -= 0.8f;
+                _NewLock = Instantiate(_GateLocks[2, _steps], newLockPos, Quaternion.identity);
+                _moveDir = moveDir.right;
+                _selectorDir = selectorDir.none;
+                
+                Destroy(_Selector);
+            }
+            else if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                Vector3 newLockPos = _GateLocks[2, _steps].transform.position;
 
-            _NewGateLocks = new GameObject[]
-            { 
-                Instantiate(RedGateLock, newGateLocksPos[0], Quaternion.identity),
-                Instantiate(GreenGateLock, newGateLocksPos[1], Quaternion.identity),
-                Instantiate(BlueGateLock, newGateLocksPos[2], Quaternion.identity)
-            };
+                newLockPos.x += 0.8f;
+                _NewLock = Instantiate(_GateLocks[0, _steps], newLockPos, Quaternion.identity);
+                _moveDir = moveDir.left;
+                _selectorDir = selectorDir.none;
 
-            _moveDir = moveDir.right;
+                Destroy(_Selector);
+            }
         }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        else if (_selectorDir == selectorDir.vertical)
         {
-            for (int n = 0; n < 3; ++n)
+            if (Input.GetKeyDown(KeyCode.RightArrow))
             {
-                newGateLocksPos[n] = _GateLocks[n * 3].transform.position;
-                newGateLocksPos[n].x += 0.8f;
+                if (_steps == 2)
+                {
+                    _Selector.transform.Translate(Vector3.left * 1.6f);
+                    _steps = 0;
+                }
+                else
+                {
+                    _Selector.transform.Translate(Vector3.right * 0.8f);
+                    ++_steps;
+                }
             }
-
-            _NewGateLocks = new GameObject[]
+            else if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
-                Instantiate(RedGateLock, newGateLocksPos[0], Quaternion.identity),
-                Instantiate(GreenGateLock, newGateLocksPos[1], Quaternion.identity),
-                Instantiate(BlueGateLock, newGateLocksPos[2], Quaternion.identity)
-            };
-
-            _moveDir = moveDir.left;
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            _NewGateLocks = new GameObject[3];
-
-            for (int n = 0; n < 3; ++n)
-            {
-                newGateLocksPos[n] = _GateLocks[n].transform.position;
-                newGateLocksPos[n].y += 0.8f;
-
-                _NewGateLocks[n] = Instantiate(BlueGateLock, newGateLocksPos[n], Quaternion.identity);
+                if (_steps == 0)
+                {
+                    _Selector.transform.Translate(Vector3.right * 1.6f);
+                    _steps = 2;
+                }
+                else
+                {
+                    _Selector.transform.Translate(Vector3.left * 0.8f);
+                    --_steps;
+                }
             }
-
-            _moveDir = moveDir.down;
-        }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            _NewGateLocks = new GameObject[3];
-
-            for (int n = 0; n < 3; ++n)
+            else if (Input.GetKeyDown(KeyCode.UpArrow))
             {
-                newGateLocksPos[n] = _GateLocks[n].transform.position;
-                newGateLocksPos[n].y -= 0.8f;
+                Vector3 newLockPos = _GateLocks[_steps, 2].transform.position;
 
-                _NewGateLocks[n] = Instantiate(RedGateLock, newGateLocksPos[n], Quaternion.identity);
+                newLockPos.y -= 0.8f;
+                _NewLock = Instantiate(_GateLocks[_steps, 0], newLockPos, Quaternion.identity);
+                _moveDir = moveDir.up;
+                _selectorDir = selectorDir.none;
+
+                Destroy(_Selector);
             }
+            else if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                Vector3 newLockPos = _GateLocks[_steps, 0].transform.position;
 
-            _moveDir = moveDir.up;
+                newLockPos.y += 0.8f;
+                _NewLock = Instantiate(_GateLocks[_steps, 2], newLockPos, Quaternion.identity);
+                _moveDir = moveDir.down;
+                _selectorDir = selectorDir.none;
+
+                Destroy(_Selector);
+            }
         }
     }
 
@@ -122,134 +172,85 @@ public class GateBehaviourScript : MonoBehaviour
         switch (_moveDir)
         {
             case moveDir.right:
-                for (int m = 0; m < 9; ++m)
+                for (int i = 0; i < 3; ++i)
                 {
-                    _GateLocks[m].transform.Translate(Vector3.right * _speed);
+                    _GateLocks[i, _steps].transform.Translate(Vector3.right * _speed);
                 }
+                _NewLock.transform.Translate(Vector3.right * _speed);
+                _traveled += _speed;
 
-                for (int m = 0; m < 3; ++m)
+                if (_traveled == 0.8f)
                 {
-                    _NewGateLocks[m].transform.Translate(Vector3.right * _speed);
-                }
+                    Destroy(_GateLocks[2, _steps]);
 
-                if (_steps == 4)
-                {
-                    for (int d = 2; d < 9; d += 3)
+                    for (int i = 2; i > 0; --i)
                     {
-                        Destroy(_GateLocks[d]);
+                        _GateLocks[i, _steps] = _GateLocks[i - 1, _steps];
                     }
-
-                    for (int m = 8; m >= 0; --m)
-                    {
-                        if (m % 3 == 0) // 6, 3, 0
-                        {
-                            _GateLocks[m] = _NewGateLocks[m / 3];
-                            Destroy(_NewGateLocks[m / 3]);
-                        }
-                        else
-                        {
-                            _GateLocks[m] = _GateLocks[m - 1];
-                        }
-                    }
+                    _GateLocks[0, _steps] = _NewLock;
                 }
-                
+
                 break;
 
             case moveDir.left:
-                for (int m = 0; m < 9; ++m)
+                for (int i = 0; i < 3; ++i)
                 {
-                    _GateLocks[m].transform.Translate(Vector3.left * _speed);
+                    _GateLocks[i, _steps].transform.Translate(Vector3.left * _speed);
                 }
+                _NewLock.transform.Translate(Vector3.left * _speed);
+                _traveled += _speed;
 
-                for (int m = 0; m < 3; ++m)
+                if (_traveled == 0.8f)
                 {
-                    _GateLocks[m].transform.Translate(Vector3.left * _speed);
-                }
+                    Destroy(_GateLocks[0, _steps]);
 
-                if (_steps == 4)
-                {
-                    for (int d = 0; d < 7; d += 3)
+                    for (int i = 0; i < 2; ++i)
                     {
-                        Destroy(_GateLocks[d]);
+                        _GateLocks[i, _steps] = _GateLocks[i + 1, _steps];
                     }
-
-                    for (int m = 0; m < 9; ++m)
-                    {
-                        if (m % 3 == 1) // 2, 5, 8
-                        {
-                            _GateLocks[m] = _NewGateLocks[((m + 1) - 3) / 3];
-                        }
-                        else
-                        {
-                            _GateLocks[m] = _GateLocks[m + 1];
-                        }
-                    }
+                    _GateLocks[2, _steps] = _NewLock;
                 }
 
                 break;
 
             case moveDir.up:
-                for (int m = 0; m < 9; ++m)
+                for (int i = 0; i < 3; ++i)
                 {
-                    _GateLocks[m].transform.Translate(Vector3.up * _speed);
+                    _GateLocks[_steps, i].transform.Translate(Vector3.up * _speed);
                 }
+                _NewLock.transform.Translate(Vector3.up * _speed);
+                _traveled += _speed;
 
-                for (int m = 0; m < 3; ++m)
+                if (_traveled == 0.8f)
                 {
-                    _GateLocks[m].transform.Translate(Vector3.up * _speed);
-                }
+                    Destroy(_GateLocks[_steps, 0]);
 
-                if (_steps == 4)
-                {
-                    for (int d = 0; d < 3; ++d)
+                    for (int i = 0; i < 2; ++i)
                     {
-                        Destroy(_GateLocks[d]);
+                        _GateLocks[_steps, i] = _GateLocks[_steps, i + 1];
                     }
-
-                    for (int m = 0; m < 9; ++m)
-                    {
-                        if (m >= 6 && m <= 8) // 0, 1, 2
-                        {
-                            _GateLocks[m] = _NewGateLocks[m - 6];
-                        }
-                        else
-                        {
-                            _GateLocks[m] = _GateLocks[m + 3];
-                        }
-                    }
+                    _GateLocks[_steps, 2] = _NewLock;
                 }
 
                 break;
 
             case moveDir.down:
-                for (int m = 0; m < 9; ++m)
+                for (int i = 0; i < 3; ++i)
                 {
-                    _GateLocks[m].transform.Translate(Vector3.down * _speed);
+                    _GateLocks[_steps, i].transform.Translate(Vector3.down * _speed);
                 }
+                _NewLock.transform.Translate(Vector3.down * _speed);
+                _traveled += _speed;
 
-                for (int m = 0; m < 3; ++m)
+                if (_traveled == 0.8f)
                 {
-                    _GateLocks[m].transform.Translate(Vector3.down * _speed);
-                }
+                    Destroy(_GateLocks[_steps, 2]);
 
-                if (_steps == 4)
-                {
-                    for (int d = 6; d < 9; ++d)
+                    for (int i = 2; i > 0; --i)
                     {
-                        Destroy(_GateLocks[d]);
+                        _GateLocks[_steps, i] = _GateLocks[_steps, i - 1];
                     }
-
-                    for (int m = 8; m >= 0; --m)
-                    {
-                        if (m <= 2)
-                        {
-                            _GateLocks[m] = _NewGateLocks[m];
-                        }
-                        else
-                        {
-                            _GateLocks[m] = _GateLocks[m - 3];
-                        }
-                    }
+                    _GateLocks[_steps, 0] = _NewLock;
                 }
 
                 break;
@@ -258,15 +259,29 @@ public class GateBehaviourScript : MonoBehaviour
                 break;
         }
 
-        if (_moveDir != moveDir.none)
+        if (_traveled == 0.8f)
         {
-            ++_steps;
-
-            if (_steps > 4)
+            if (_moveDir == moveDir.right || _moveDir == moveDir.left)
             {
-                _moveDir = moveDir.none;
-                _steps = 0;
+                Vector3 newSelectorPos = _GateLocks[_steps, 1].transform.position;
+
+                newSelectorPos.z += 1;
+
+                _Selector = Instantiate(VerticalSelector, newSelectorPos, Quaternion.identity);
+                _selectorDir = selectorDir.vertical;
             }
+            else if (_moveDir == moveDir.up || _moveDir == moveDir.down)
+            {
+                Vector3 newSelectorPos = _GateLocks[1, _steps].transform.position;
+
+                newSelectorPos.z += 1;
+
+                _Selector = Instantiate(HorizontalSelector, newSelectorPos, Quaternion.identity);
+                _selectorDir = selectorDir.horizontal;
+            }
+
+            _moveDir = moveDir.none;
+            _traveled = 0;
         }
     }
 }

@@ -47,3 +47,5 @@ MonoBehaviour:
   RedGateLock: {fileID: 4725880652378373451, guid: 2717dc4e129b3614aabf415a31832daa, type: 3}
   GreenGateLock: {fileID: 4725880652378373451, guid: 1cdb1cf6ba4064e40ba5e7ea50a93fbe, type: 3}
   BlueGateLock: {fileID: 4725880652378373451, guid: 1886f2c344bd8164e97e1003bd3ad3e5, type: 3}
+  HorizontalSelector: {fileID: 6610341849245163640, guid: 09bd5e1eb2d901147aa5f9fe9424df1d, type: 3}
+  VerticalSelector: {fileID: 6610341849245163640, guid: 43aa78b1f22cba24e97bf7e4e6c013fc, type: 3}
