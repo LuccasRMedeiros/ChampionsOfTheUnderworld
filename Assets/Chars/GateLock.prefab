@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5155831524594350381}
   - component: {fileID: -2768040239063720925}
   m_Layer: 0
-  m_Name: RedGateLock
+  m_Name: GateLock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

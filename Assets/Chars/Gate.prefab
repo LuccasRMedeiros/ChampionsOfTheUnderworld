@@ -44,8 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcf602681bdd9cf448e266f388dbf11e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RedGateLock: {fileID: 4725880652378373451, guid: 2717dc4e129b3614aabf415a31832daa, type: 3}
-  GreenGateLock: {fileID: 4725880652378373451, guid: 1cdb1cf6ba4064e40ba5e7ea50a93fbe, type: 3}
-  BlueGateLock: {fileID: 4725880652378373451, guid: 1886f2c344bd8164e97e1003bd3ad3e5, type: 3}
+  GateLock: {fileID: 4725880652378373451, guid: 2717dc4e129b3614aabf415a31832daa, type: 3}
+  Daemon: {fileID: 3296388324265965230, guid: dd6f046fa378945fba78502be61960ae, type: 3}
   HorizontalSelector: {fileID: 6610341849245163640, guid: 09bd5e1eb2d901147aa5f9fe9424df1d, type: 3}
   VerticalSelector: {fileID: 6610341849245163640, guid: 43aa78b1f22cba24e97bf7e4e6c013fc, type: 3}
+  manyDaemons: 0
